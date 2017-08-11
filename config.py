@@ -25,6 +25,31 @@ class Config(object):
     TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates').replace('\\', '/')
     STATIC_PATH = os.path.join(BASE_DIR, 'static').replace('\\', '/')
 
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'filters': {
+        },
+        'formatters': {
+            'standard': {
+                'format': '%(message)s'
+            },
+        },
+        'handlers': {
+            # 'console': {
+            #     'class': 'logging.StreamHandler',
+            #     'formatter': 'standard'
+            # }
+        },
+        'loggers': {
+            'flask': {
+                # 'handlers': ['console'],
+                'level': 'DEBUG',
+                'propagate': False,
+            }
+        }
+    }
+
     @staticmethod
     def init_app(app):
         pass
