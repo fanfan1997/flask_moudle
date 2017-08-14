@@ -16,4 +16,7 @@ manager.add_command("runserver", Server(
 if __name__ == "__main__":
     for url in urls:
         api.add_resource(*url)
-    manager.run()
+    try:
+        manager.run()
+    except:
+        app.run()
