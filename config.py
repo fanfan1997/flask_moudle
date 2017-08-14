@@ -27,23 +27,8 @@ class Config(object):
 
     LOGGING = {
         'version': 1,
-        'disable_existing_loggers': False,
-        'filters': {
-        },
-        'formatters': {
-            'standard': {
-                'format': '%(message)s'
-            },
-        },
-        'handlers': {
-            # 'console': {
-            #     'class': 'logging.StreamHandler',
-            #     'formatter': 'standard'
-            # }
-        },
         'loggers': {
             'flask': {
-                # 'handlers': ['console'],
                 'level': 'DEBUG',
                 'propagate': False,
             }
