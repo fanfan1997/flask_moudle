@@ -25,6 +25,16 @@ class Config(object):
     TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates').replace('\\', '/')
     STATIC_PATH = os.path.join(BASE_DIR, 'static').replace('\\', '/')
 
+    LOGGING = {
+        'version': 1,
+        'loggers': {
+            'flask': {
+                'level': 'DEBUG',
+                'propagate': False,
+            }
+        }
+    }
+
     @staticmethod
     def init_app(app):
         pass
