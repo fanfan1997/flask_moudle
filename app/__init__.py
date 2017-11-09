@@ -3,34 +3,52 @@
 
 import os
 
-from flask import Flask
-from flask_mongoengine import MongoEngine
-from config import config
-from flask_restful import Api
-from flask_cache import Cache
-from flask_mail import Mail
+import logging
 
-db = MongoEngine()
-mail = Mail()
-cache = None
+from flask import Flask
+from flask_restful import Api
+from flask_sqlalchemy import SQLAlchemy
+from logging.config import fileConfig
+from oslo_config import cfg
+
+from config import settings
+
+import car_ins_client
+
+OSLO_CONF = cfg.CONF
+car_ins_client.register_opts(OSLO_CONF)
+
+fileConfig(fname='%s/config/log.cfg' % settings.BASE_DIR)
+
+mysql_db = SQLAlchemy(
+    session_options=settings.MYSQL_DB_SESSION_OPTIONS)
+api = None
 
 
 def create_app(config_name):
-    global cache
     app = Flask(__name__,
-                template_folder=config[config_name].TEMPLATE_PATH,
-                static_folder=config[config_name].STATIC_PATH)
-    app.config.from_object(config[config_name])
+                template_folder=settings.TEMPLATE_PATH,
+                static_folder=settings.STATIC_PATH)
+    cfg_filename = '%s/config/%s.py' % (settings.BASE_DIR, config_name)
+    app.config.from_pyfile(filename=cfg_filename)
+    app._logger = logging.getLogger(app.logger_name)
 
-    config[config_name].init_app(app)
-    cache = Cache(app, config=config[config_name].REDIS_SETTINGS)
-    db.init_app(app)
-    mail.init_app(app)
+    # app.config.from_object(config[config_name])
+    # config[config_name].init_app(app)
 
-    # from app.urls import api as api_blueprint
+    # or using lazy instantiation
+
+    mysql_db.init_app(app)
+
+    # from app.urls import api as resful
+    # 注意，init_app方式无法执行，报报 404 错误
+    api = Api(app)
+
+    # 注意 init 顺序
+    import urls
+    for u in urls.urls:
+        api.add_resource(*u)
+
     # app.register_blueprint(api_blueprint, url_prefix='/api')
 
     return app
-
-app = create_app(os.getenv('config') or 'default')
-api = Api(app)
